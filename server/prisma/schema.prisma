@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  password     String
+  createdAt    DateTime      @default(now())
+  wallet       Wallet?
+  budgets      Budget[]
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Wallet {
+  id           String        @id @default(cuid())
+  userId       String        @unique
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance      Decimal       @default(0) @db.Decimal(10, 2)
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String
+  icon         String?
+  userId       String?
+  transactions Transaction[]
+  budgets      Budget[]
+}
+
+model Transaction {
+  id         String   @id @default(cuid())
+  walletId   String
+  wallet     Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  amount     Decimal  @db.Decimal(10, 2)
+  type       TxType
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  note       String?
+  createdAt  DateTime @default(now())
+}
+
+model Budget {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  limitAmount Decimal  @db.Decimal(10, 2)
+  month       Int
+  year        Int
+  @@unique([userId,month,year,categoryId])
+}
+
+enum TxType {
+  CREDIT
+  DEBIT
+}
