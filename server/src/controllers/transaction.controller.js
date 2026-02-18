@@ -1,4 +1,5 @@
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient } = require("@prisma/client");
+const redis = require("../utils/redis");
 const prisma = new PrismaClient()
 
 async function getTransactions(req, res) {
@@ -27,15 +28,26 @@ async function getTransactions(req, res) {
 
 async function getTransactionSummary(req, res) {
     try{
+
+        
         const userId = req.user;
+        const now = new Date();
+
+    const cachekey=`summary:${userId}:${now.getFullYear()}-${now.getMonth()+1}`;
+    const cached = await redis.get(cachekey);
+    if(cached){
+        return res.status(200).json({
+            summary:cached,
+            cached:true
+        })
+    }
+        
     const wallet = await prisma.wallet.findUnique({
         where: { userId }
     })
     if (!wallet) {
         return res.status(404).json({ message: "Wallet not found" })
     }
-
-    const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
     const transaction = await prisma.transaction.groupBy({
@@ -65,7 +77,8 @@ async function getTransactionSummary(req, res) {
             }
         })
     )
-    return res.status(200).json({ summary })
+    await redis.set(cachekey,summary,{ex:3600})
+    return res.status(200).json({ summary,cached:false })
 
 
     } catch (error) {

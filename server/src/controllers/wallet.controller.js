@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
+const redis = require("../utils/redis")
 
 async function getWallet(req, res) {
     try {
@@ -50,6 +51,9 @@ async function addMoney(req, res) {
             })
         })
 
+        const now = new Date()
+        const cacheKey = `summary:${userId}:${now.getFullYear()}-${now.getMonth() + 1}`
+        await redis.del(cacheKey)
         return res.status(200).json({
             message: "money added successfully"
         })
@@ -104,6 +108,10 @@ async function withdraw(req, res) {
                 }
             })
         })
+
+        const now = new Date()
+        const cacheKey = `summary:${userId}:${now.getFullYear()}-${now.getMonth() + 1}`
+        await redis.del(cacheKey)
         return res.status(200).json({
             message: "amount debited successfully"
         })
