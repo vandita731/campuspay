@@ -51,8 +51,8 @@ model Transaction {
   wallet     Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
   amount     Decimal  @db.Decimal(10, 2)
   type       TxType
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
   note       String?
   createdAt  DateTime @default(now())
 }
