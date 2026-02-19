@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser")
 const walletRoutes = require("./routes/wallet.routes")
 const transactionRoutes= require("./routes/transaction.routes")
 const budgetRoutes=require("./routes/budget.routes")
+const insightRoutes=require("./routes/insight.routes")
 require("dotenv").config()
 
 const authRoutes = require("./routes/auth.routes")
@@ -22,6 +23,7 @@ app.use("/api/auth", authRoutes)
 app.use("/api/wallet",walletRoutes)
 app.use("/api/transactions",transactionRoutes)
 app.use("/api/budget",budgetRoutes)
+app.use("/api/insight",insightRoutes)
 
 
 module.exports = app
