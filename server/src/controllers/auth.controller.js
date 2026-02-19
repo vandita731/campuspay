@@ -116,7 +116,7 @@ async function login(req, res) {
     } catch (error) {
         console.error("Register error:", error)
         return res.status(500).json({
-            message: "getting error in creating the user"
+            message: "getting error in login the user"
         })
 
     }
