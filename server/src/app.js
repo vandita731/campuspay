@@ -6,6 +6,7 @@ const walletRoutes = require("./routes/wallet.routes")
 const transactionRoutes= require("./routes/transaction.routes")
 const budgetRoutes=require("./routes/budget.routes")
 const insightRoutes=require("./routes/insight.routes")
+const categoryRoutes=require("./routes/category.routes")
 require("dotenv").config()
 
 const authRoutes = require("./routes/auth.routes")
@@ -22,8 +23,9 @@ app.use(cors({
 app.use("/api/auth", authRoutes)
 app.use("/api/wallet",walletRoutes)
 app.use("/api/transactions",transactionRoutes)
-app.use("/api/budget",budgetRoutes)
-app.use("/api/insight",insightRoutes)
+app.use("/api/budgets",budgetRoutes)
+app.use("/api/insights",insightRoutes)
+app.use("/api/categories",categoryRoutes)
 
 
 module.exports = app
