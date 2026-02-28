@@ -3,6 +3,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
+import Wallet from './pages/Wallet'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard
           />} />
+          <Route path="/wallet" element={<Wallet></Wallet>} />
 
         </Route>
         <Route path="*" element={<Navigate to="/login" />} />
