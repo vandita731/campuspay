@@ -30,7 +30,7 @@ async function register(req, res) {
             data: { userId: user.id }
         })
 
-        const accessToken = generateAccessToken(user.id)
+        const accessToken = generateAccessToken(user)
         const refreshToken = generateRefreshToken(user.id)
         const expire = new Date();
         expire.setDate(expire.getDate() + 7)
@@ -83,7 +83,7 @@ async function login(req, res) {
                 message: "wrong password try again"
             })
         }
-        const accessToken = generateAccessToken(user.id)
+        const accessToken = generateAccessToken(user)
         const refreshToken = generateRefreshToken(user.id)
         const expire = new Date();
         expire.setDate(expire.getDate() + 7);
@@ -150,8 +150,10 @@ async function refresh(req, res) {
     if(refresh.expiresAt< new Date()){
         return res.status(401).json({ message: "Refresh token expired" })
     }
-
-    const accessToken = generateAccessToken(refresh.userId)
+    const user = await prisma.user.findFirst({
+        where:{id:refresh.userId}
+    })
+    const accessToken = generateAccessToken(user)
 
     return res.status(200).json({
         accessToken:accessToken
